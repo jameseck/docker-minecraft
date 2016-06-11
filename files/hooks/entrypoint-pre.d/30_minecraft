@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cat <<'EOF' > /data/server/start.sh
+#!/bin/bash
+echo "Starting Minecraft server..."
+cd /data/server/
+exec java -Xms${MINECRAFT_MINHEAP} -Xmx${MINECRAFT_MAXHEAP} -jar minecraft_server.${MINECRAFT_VERSION}.jar ${JAVA_OPTS}
+EOF
+chmod +x /data/server/start.sh
+
+cat <<'EOF' > /data/server/eula.txt
+eula=true
+EOF

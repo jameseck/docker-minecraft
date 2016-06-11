@@ -1,0 +1,36 @@
+#!/bin/bash
+
+FORGE_SITE="http://files.minecraftforge.net/maven/net/minecraftforge/forge"
+
+die () {
+  echo $*
+  exit 1
+}
+
+[ ! -d /data ] && die "Data directory does not exist"
+
+# If data directory has data, exit
+[ -z "$(ls -A /data)" ] || exit 0
+[ ! -d /data/server ] && mkdir /data/server || die "Failed to create directory /data/server"
+
+FORGE_JAR="forge-${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VERSION}-installer.jar"
+[ -z ${FORGE_URL} ] && FORGE_URL="${FORGE_SITE}/${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VERSION}/${FORGE_JAR}"
+
+curl -q -o /tmp/${FORGE_JAR} ${FORGE_URL}
+[ "$?" != "0" ] && die "curl command failed"
+cd /data/server && java -jar /tmp/${FORGE_JAR} --installServer
+[ "$?" != "0" ] && die "Forge java installer failed"
+rm -f /tmp/${FORGE_JAR}
+
+cat <'EOF' > /data/server/start.sh
+#!/bin/bash
+echo "Starting Minecraft server..."
+cd /data/server/
+exec java -Xms${MINECRAFT_MINHEAP} -Xmx${MINECRAFT_MAXHEAP} -jar ${FORGE_JAR} ${JAVA_OPTS}
+EOF
+chmod +x /data/server/start.sh
+
+if [ "$(grep 'eula=true' /data/server/eula.txt)" == "" ]; then
+cat <'EOF' > /data/server/eula.txt
+eula=true
+EOF

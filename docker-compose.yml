@@ -1,0 +1,7 @@
+version: '2'
+services:
+  docker-minecraft:
+    build: .
+    image: jameseckersall/docker-minecraft
+    environment:
+      DEBUG: "no"
