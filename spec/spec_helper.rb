@@ -1,7 +1,7 @@
 require 'serverspec'
 require "docker"
 
-CONTAINER_START_SLEEP = 40
+CONTAINER_START_SLEEP = 60
 
 describe "Dockerfile" do
   before(:all) do
