@@ -3,8 +3,10 @@ FROM jameseckersall/docker-centos-base
 MAINTAINER James Eckersall <james.eckersall@gmail.com>
 
 COPY files /
-RUN yum install -y java-1.8.0-openjdk && \
+RUN yum install -y java-1.8.0-openjdk iproute && \
     yum clean all && \
+    mkdir /data || true && \
+    chmod 0777 /data || true && \
     chmod -R 0755 /init/* /hooks/*
 ENV \
   MINECRAFT_VERSION=1.7.10 \

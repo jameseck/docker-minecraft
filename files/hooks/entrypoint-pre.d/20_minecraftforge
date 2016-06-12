@@ -9,7 +9,17 @@ die () {
 
 [ ! -d /data ] && die "Data directory does not exist"
 
+# If data directory has data, set variable so we don't download the forge installer
+if [ -z "$(ls -A /data)" ]; then
+  echo "Data dir empty"
+  DATA_DIR_EMPTY=1
+else
+  echo "Data dir not empty"
+  DATA_DIR_EMPTY=0
+fi
+
 if [ ! -d /data/server ]; then
+  echo "Creating /data/server directory"
   mkdir /data/server || die "Failed to create directory /data/server"
 fi
 
@@ -25,15 +35,16 @@ exec java -Xms\${MINECRAFT_MINHEAP} -Xmx\${MINECRAFT_MAXHEAP} -jar ${FORGE_JAR} 
 EOF
 chmod +x /data/server/start.sh
 
-[ "$(grep 'eula=true' /data/server/eula.txt)" == "" ] && cat <<'EOF' > /data/server/eula.txt
-eula=true
-EOF
+[ "$DATA_DIR_EMPTY" == "0" ] && exit 0
 
-# If data directory has data, exit
-[ -z "$(ls -A /data)" ] || exit 0
-
-curl -q -o /tmp/${FORGE_INSTALLER_JAR} ${FORGE_URL}
+echo "Downloading Forge Installer ${FORGE_URL}"
+curl -o /tmp/${FORGE_INSTALLER_JAR} ${FORGE_URL}
 [ "$?" != "0" ] && die "curl command failed"
 cd /data/server && java -jar /tmp/${FORGE_INSTALLER_JAR} --installServer
 [ "$?" != "0" ] && die "Forge java installer failed"
 rm -f /tmp/${FORGE_INSTALLER_JAR}
+
+[ ! -f /data/server/eula.txt ] && touch /data/server/eula.txt
+[ "$(grep 'eula=true' /data/server/eula.txt)" == "" ] && cat <<'EOF' > /data/server/eula.txt
+eula=true
+EOF
