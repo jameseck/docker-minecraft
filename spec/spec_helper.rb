@@ -10,21 +10,20 @@ describe "Dockerfile" do
     puts "Finished building image"
 
     set :backend, :docker
-    #set :docker_image, @image.id
   end
 
   describe 'Dockerfile#running' do
     before(:all) do
       @container = Docker::Container.create(
         'Image'      => @image.id,
-      }
+      )
 
       ret = @container.start
 
       ready_regex = /\[Server thread\/INFO\]: Done \(([0-9\.s]+)\)\! For help, type \"help\" or \"\?\"/
       counter=0
       while counter < CONTAINER_START_SLEEP do
-        match = @container.logs({ :stdout => true }).split("\n").grep(ready_regex)
+        match = @container.logs(:stdout => true).split("\n").grep(ready_regex)
         unless match.empty? then
           puts "Found minecraft server ready match"
           break
@@ -39,7 +38,7 @@ describe "Dockerfile" do
         exit 1
       end
 
-      puts @container.logs({ :stdout => true, :stderr => true })
+      puts @container.logs(:stdout => true, :stderr => true)
 
       set :docker_container, @container.id
     end
