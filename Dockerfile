@@ -3,11 +3,13 @@ FROM jameseckersall/docker-centos-base
 MAINTAINER James Eckersall <james.eckersall@gmail.com>
 
 COPY files /
-RUN yum install -y java-1.8.0-openjdk iproute && \
+RUN yum install -y java-1.8.0-openjdk iproute which && \
+    pip uninstall -y supervisor && \
+    rm -rf /init/supervisord /etc/supervisord.d /hooks/supervisord-pre.d /hooks/supervisord-ready && \
     yum clean all && \
     mkdir /data || true && \
     chmod 0777 /data || true && \
-    chmod -R 0755 /init/* /hooks/*
+    chmod -R 0755 /init/* /hooks/* /usr/local/bin/mccmd
 ENV \
   MINECRAFT_VERSION=1.7.10 \
   FORGE_VERSION=10.13.4.1566 \
@@ -16,9 +18,10 @@ ENV \
   MINECRAFT_MAXHEAP=2048M \
   MINECRAFT_MOTD=Minecraft \
   JAVA_OPTS="-server -XX:+UseConcMarkSweepGC nogui" \
-  FML_CONFIRM=""
+  FML_CONFIRM="" \
+  MC_HOME=/data
 
 USER 100000
-VOLUME /data
+VOLUME $MC_HOME
 EXPOSE 25565
 CMD [ "/data/server/start.sh" ]

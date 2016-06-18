@@ -1,0 +1,5 @@
+#!/bin/bash
+
+FIFO="${MC_HOME}/server/server_fifo"
+
+echo $@ >> $FIFO

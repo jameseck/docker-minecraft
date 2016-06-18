@@ -7,10 +7,10 @@ die () {
   exit 1
 }
 
-[ ! -d /data ] && die "Data directory does not exist"
+[ ! -d ${MC_HOME} ] && die "Data directory does not exist"
 
 # If data directory has data, set variable so we don't download the forge installer
-if [ -z "$(ls -A /data)" ]; then
+if [ -z "$(ls -A ${MC_HOME})" ]; then
   echo "Data dir empty"
   DATA_DIR_EMPTY=1
 else
@@ -18,9 +18,9 @@ else
   DATA_DIR_EMPTY=0
 fi
 
-if [ ! -d /data/server ]; then
-  echo "Creating /data/server directory"
-  mkdir /data/server || die "Failed to create directory /data/server"
+if [ ! -d ${MC_HOME}/server ]; then
+  echo "Creating ${MC_HOME}/server directory"
+  mkdir ${MC_HOME}/server || die "Failed to create directory ${MC_HOME}/server"
 fi
 
 FORGE_INSTALLER_JAR="forge-${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VERSION}-installer.jar"
@@ -33,24 +33,19 @@ else
   FML_CONFIRM=""
 fi
 
-cat <<EOF > /data/server/start.sh
-#!/bin/bash
-echo "Starting Minecraft server..."
-cd /data/server/
-exec java -Xms\${MINECRAFT_MINHEAP} -Xmx\${MINECRAFT_MAXHEAP} ${FML_CONFIRM} -jar ${FORGE_JAR} \${JAVA_OPTS}
-EOF
-chmod +x /data/server/start.sh
+[ ! -f "${MC_HOME}/server/start.sh" ] && cp /opt/default_start.sh ${MC_HOME}/server/start.sh
+chmod +x ${MC_HOME}/server/start.sh
 
 [ "$DATA_DIR_EMPTY" == "0" ] && exit 0
 
 echo "Downloading Forge Installer ${FORGE_URL}"
 curl -o /tmp/${FORGE_INSTALLER_JAR} ${FORGE_URL}
 [ "$?" != "0" ] && die "curl command failed"
-cd /data/server && java -jar /tmp/${FORGE_INSTALLER_JAR} --installServer
+cd ${MC_HOME}/server && java -jar /tmp/${FORGE_INSTALLER_JAR} --installServer
 [ "$?" != "0" ] && die "Forge java installer failed"
 rm -f /tmp/${FORGE_INSTALLER_JAR}
 
-[ ! -f /data/server/eula.txt ] && touch /data/server/eula.txt
-[ "$(grep 'eula=true' /data/server/eula.txt)" == "" ] && cat <<'EOF' > /data/server/eula.txt
+[ ! -f ${MC_HOME}/server/eula.txt ] && touch ${MC_HOME}/server/eula.txt
+[ "$(grep 'eula=true' ${MC_HOME}/server/eula.txt)" == "" ] && cat <<'EOF' > ${MC_HOME}/server/eula.txt
 eula=true
 EOF

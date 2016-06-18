@@ -17,10 +17,7 @@ describe "Dockerfile" do
     before(:all) do
       @container = Docker::Container.create(
         'Image'      => @image.id,
-#        'HostConfig' => {
-#          'PortBindings' => { "#{REDIS_PORT}/tcp" => [{ 'HostPort' => "#{REDIS_PORT}" }] }
-#        }
-      )
+      }
 
       ret = @container.start
 
