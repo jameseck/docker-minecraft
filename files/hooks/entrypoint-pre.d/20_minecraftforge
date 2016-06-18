@@ -27,11 +27,17 @@ FORGE_INSTALLER_JAR="forge-${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VER
 [ -z ${FORGE_URL} ] && FORGE_URL="${FORGE_SITE}/${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VERSION}/${FORGE_INSTALLER_JAR}"
 FORGE_JAR="forge-${MINECRAFT_VERSION}-${FORGE_VERSION}-${MINECRAFT_VERSION}-universal.jar"
 
+if [ ! -z "$FML_CONFIRM" ]; then
+  FML_CONFIRM="-Dfml.queryResult=${FML_CONFIRM}"
+else
+  FML_CONFIRM=""
+fi
+
 cat <<EOF > /data/server/start.sh
 #!/bin/bash
 echo "Starting Minecraft server..."
 cd /data/server/
-exec java -Xms\${MINECRAFT_MINHEAP} -Xmx\${MINECRAFT_MAXHEAP} -jar ${FORGE_JAR} \${JAVA_OPTS}
+exec java -Xms\${MINECRAFT_MINHEAP} -Xmx\${MINECRAFT_MAXHEAP} ${FML_CONFIRM} -jar ${FORGE_JAR} \${JAVA_OPTS}
 EOF
 chmod +x /data/server/start.sh
 

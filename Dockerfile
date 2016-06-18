@@ -15,7 +15,8 @@ ENV \
   MINECRAFT_MINHEAP=512M \
   MINECRAFT_MAXHEAP=2048M \
   MINECRAFT_MOTD=Minecraft \
-  JAVA_OPTS="-server -XX:+UseConcMarkSweepGC nogui"
+  JAVA_OPTS="-server -XX:+UseConcMarkSweepGC nogui" \
+  FML_CONFIRM=""
 
 USER 100000
 VOLUME /data
