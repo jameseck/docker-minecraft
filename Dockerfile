@@ -1,12 +1,18 @@
-FROM jameseckersall/docker-centos-base
+FROM alpine
+#FROM jameseckersall/docker-centos-base
 
 MAINTAINER James Eckersall <james.eckersall@gmail.com>
 
 COPY files /
-RUN yum install -y java-1.8.0-openjdk iproute which && \
-    pip uninstall -y supervisor && \
-    rm -rf /init/supervisord /etc/supervisord.d /hooks/supervisord-pre.d /hooks/supervisord-ready && \
-    yum clean all && \
+RUN \
+  apk add --update bash curl iproute2 openjdk8-jre which && \
+  rm -rf /var/cache/apk/*
+
+#RUN yum install -y java-1.8.0-openjdk iproute which && \
+#    pip uninstall -y supervisor && \
+#    rm -rf /init/supervisord /etc/supervisord.d /hooks/supervisord-pre.d /hooks/supervisord-ready && \
+#    yum clean all && \
+RUN \
     mkdir /data || true && \
     chmod 0777 /data || true && \
     chmod -R 0755 /init/* /hooks/* /usr/local/bin/mccmd
@@ -24,4 +30,5 @@ ENV \
 USER 100000
 VOLUME $MC_HOME
 EXPOSE 25565
+ENTRYPOINT ["/bin/bash", "-e", "/init/entrypoint"]
 CMD [ "/data/server/start.sh" ]
