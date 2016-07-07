@@ -43,11 +43,20 @@ describe "Dockerfile" do
       set :docker_container, @container.id
     end
 
-    it "installs the right version of CentOS" do
-      expect(os_version).to match(/^CentOS Linux release 7/)
+    it "installs Alpine Linux" do
+      expect(os_name).to match(/^Alpine Linux/)
     end
+
+    it "installs the right version of Alpine Linux" do
+      expect(os_version).to match(/^3.4/)
+    end
+
+    def os_name
+      command('cat /etc/os-release | grep ^NAME | awk -F\" \'{print $2}\'').stdout
+    end
+
     def os_version
-      command("cat /etc/redhat-release").stdout
+      command('cat /etc/os-release | grep ^VERSION_ID | awk -F\= \'{print $2}\'').stdout
     end
 
     describe process('java') do
