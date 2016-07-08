@@ -44,7 +44,7 @@ if [ "$entrypoint_pre" != "" ]; then
   done
 fi
 
-[[ -f "/hooks/entrypoint-pre" ]] && echo "The /hooks/entrypoint-pre hook has been replaced with /hooks/entrypoint-pre.d/*" && exit 1
+[[ -f "/hooks/entrypoint-pre" ]] && die "The /hooks/entrypoint-pre hook has been replaced with /hooks/entrypoint-pre.d/*"
 
 [[ -f "/init/setup" ]] && /init/setup
 
@@ -52,5 +52,5 @@ eval ${SETUP:-}
 
 [[ -f "/hooks/entrypoint-exec" ]] && /hooks/entrypoint-exec
 
-[ ! -f "$1" ] && echo "CMD: ${1} does not exist" && exit 1
+[ ! -f "$1" ] && die "CMD: ${1} does not exist"
 exec $*
