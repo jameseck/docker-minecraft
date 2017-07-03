@@ -5,7 +5,7 @@ MAINTAINER James Eckersall <james.eckersall@gmail.com>
 
 COPY files /
 RUN \
-  apk add --update bash curl iproute2 openjdk8-jre which && \
+  apk add --update bash curl iproute2 openjdk8-jre which wget && \
   rm -rf /var/cache/apk/*
 
 #RUN yum install -y java-1.8.0-openjdk iproute which && \
